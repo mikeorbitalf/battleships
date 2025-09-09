@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Online Battleships</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <h1>⚓ Neon Battleships</h1>
+        <div class="status">
+          <span id="phase">Phase: —</span>
+          <span id="turn">Turn: —</span>
+          <span id="youAre">You: Spectator</span>
+        </div>
+      </header>
+
+      <section class="controls glass">
+        <div class="joiners">
+          <button id="joinP1" class="btn">Join as Player 1</button>
+          <button id="joinP2" class="btn">Join as Player 2</button>
+          <button id="reset" class="btn btn-ghost">Reset</button>
+        </div>
+        <div class="placer">
+          <button id="randomize" class="btn">🎲 Randomize Ships</button>
+          <button id="ready" class="btn btn-primary">✅ Ready</button>
+        </div>
+      </section>
+
+      <main class="board-area">
+        <div class="board-wrap glass">
+          <h2>Your Fleet</h2>
+          <div id="yourBoard" class="board"></div>
+          <div id="yourShips" class="ship-status"></div>
+        </div>
+
+        <div class="board-wrap glass">
+          <h2>Enemy Waters</h2>
+          <div id="oppBoard" class="board board-attack"></div>
+          <div class="hint">Click a cell to fire when it's your turn.</div>
+        </div>
+
+        <aside class="chat glass">
+          <h2>Chat</h2>
+          <div id="chatLog" class="chatlog"></div>
+          <form id="chatForm" class="chatform">
+            <input
+              id="chatName"
+              type="text"
+              placeholder="Name (optional)"
+              maxlength="20"
+            />
+            <input
+              id="chatInput"
+              type="text"
+              placeholder="Type a message..."
+              maxlength="400"
+            />
+            <button class="btn btn-primary">Send</button>
+          </form>
+        </aside>
+        <div id="playersStatus" class="players-status glass"></div>
+      </main>
+
+      <footer>
+        <small
+          >Made with 💙 Socket.IO — Standard Battleship rules: Carrier(5),
+          Battleship(4), Cruiser(3), Submarine(3), Destroyer(2).</small
+        >
+      </footer>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+  </body>
+</html>
