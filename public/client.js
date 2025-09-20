@@ -83,6 +83,8 @@ function renderBoards() {
     if (mine && mine.shipId) cell.classList.add('ship');
     if (mine && mine.hit) cell.classList.add('hit');
     if (mine && !mine.hit && mine.shipId) cell.classList.add('ship-intact');
+    if (mine && mine.miss) cell.classList.add('miss');
+
 
   }
 
