@@ -197,7 +197,6 @@ function allShipsSunk(pn) {
 }
 
 function sendPrivateBoards() {
-  // Send each player their own full board and the opponent's redacted board
   for (const viewer of [1, 2]) {
     const vs = state.players[viewer];
     if (!vs.socketId) continue;
@@ -206,12 +205,17 @@ function sendPrivateBoards() {
     const myShips = state.players[viewer].ships;
 
     const opp = viewer === 1 ? 2 : 1;
-    const oppShots = state.players[viewer].shotsTaken; // what I shot
-    const oppBoardPublic = {}; // only hit/miss info from my perspective
-    // Build a fog board with only results of my shots
-    // We'll mark "H" for hit, "M" for miss
-    for (const shot of oppShots) {
-      const cell = state.players[opp].board[shot];
+    const opponentState = state.players[opp];
+    const oppBoardPublic = {};
+
+    // ✅ NEW: merge *both players'* shots, not just viewer's
+    const allShots = new Set([
+      ...state.players[viewer].shotsTaken,
+      ...opponentState.shotsTaken,
+    ]);
+
+    for (const shot of allShots) {
+      const cell = opponentState.board[shot];
       if (cell && cell.hit) {
         oppBoardPublic[shot] = { result: 'H' };
       } else {
@@ -225,6 +229,7 @@ function sendPrivateBoards() {
     });
   }
 }
+
 
 function summarizeShips(ships) {
   const sum = {};
