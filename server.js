@@ -342,6 +342,7 @@ let result = 'miss';
 let sunkShip = null;
 
 if (cell && !cell.hit) {
+  // hit a ship
   cell.hit = true;
   result = 'hit';
   const sh = target.ships[cell.shipId];
@@ -350,8 +351,13 @@ if (cell && !cell.hit) {
     sunkShip = sh.name;
   }
 } else if (cell && cell.hit) {
+  // already hit (shouldn't happen)
   result = 'hit';
+} else {
+  // ✅ record a miss on defender's board
+  target.board[key] = { miss: true };
 }
+
 
 
 
