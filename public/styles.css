@@ -63,6 +63,11 @@ h1 {
   font-weight: 600;
 }
 
+.cell.miss {
+  background-color: rgba(0, 0, 255, 0.3);
+}
+
+
 .glass {
   background: linear-gradient(180deg, var(--panel), transparent);
   border: 1px solid var(--panel-strong);
