@@ -196,9 +196,38 @@ function allShipsSunk(pn) {
   return Object.values(p.ships).every((s) => s.hits.size === s.size);
 }
 
-function sendPrivateBoards() { // Send each player their own full board and the opponent's redacted board for (const viewer of [1, 2]) { const vs = state.players[viewer]; if (!vs.socketId) continue; const myBoard = state.players[viewer].board; const myShips = state.players[viewer].ships; const opp = viewer === 1 ? 2 : 1; const oppShots = state.players[viewer].shotsTaken; // what I shot const oppBoardPublic = {}; // only hit/miss info from my perspective // Build a fog board with only results of my shots // We'll mark "H" for hit, "M" for miss for (const shot of oppShots) { const cell = state.players[opp].board[shot]; if (cell && cell.hit) { oppBoardPublic[shot] = { result: 'H' }; } else { oppBoardPublic[shot] = { result: 'M' }; } } io.to(vs.socketId).emit('boards', { you: { board: myBoard, ships: summarizeShips(myShips) }, opponent: { fog: oppBoardPublic }, }); } }
+function sendPrivateBoards() {
+  // Send each player their own full board and the opponent's redacted board
+  for (const viewer of [1, 2]) {
+    const vs = state.players[viewer];
+    if (!vs.socketId) continue;
 
+    const myBoard = state.players[viewer].board;
+    const myShips = state.players[viewer].ships;
 
+    const opp = viewer === 1 ? 2 : 1;
+    const oppShots = state.players[viewer].shotsTaken; // what I shot
+    const oppBoardPublic = {}; // only hit/miss info from my perspective
+
+    // Build a fog board with only results of my shots
+    // We'll mark "H" for hit, "M" for miss
+    for (const shot of oppShots) {
+      const cell = state.players[opp].board[shot];
+      if (cell && cell.hit) {
+        oppBoardPublic[shot] = { result: 'H' };
+      } else {
+        oppBoardPublic[shot] = { result: 'M' };
+      }
+    }
+
+    io.to(vs.socketId).emit('boards', {
+      you: { board: myBoard, ships: summarizeShips(myShips) },
+      opponent: { fog: oppBoardPublic },
+    });
+  }
+}
+
+`
 function summarizeShips(ships) {
   const sum = {};
   for (const [id, s] of Object.entries(ships)) {
@@ -309,22 +338,27 @@ io.on('connection', (socket) => {
     }
     shooter.shotsTaken.add(key);
 
-    const cell = target.board[key];
-    let result = 'miss';
-    let sunkShip = null;
+const cell = target.board[key];
+let result = 'miss';
+let sunkShip = null;
 
-    if (cell && !cell.hit) {
-      cell.hit = true;
-      result = 'hit';
-      const sh = target.ships[cell.shipId];
-      sh.hits.add(key);
-      if (sh.hits.size === sh.size) {
-        sunkShip = sh.name;
-      }
-    } else if (cell && cell.hit) {
-      // already hit; still counts as a wasted turn (shouldn’t happen due to shotsTaken guard)
-      result = 'hit';
-    }
+if (cell && !cell.hit) {
+  // hit a ship
+  cell.hit = true;
+  result = 'hit';
+  const sh = target.ships[cell.shipId];
+  sh.hits.add(key);
+  if (sh.hits.size === sh.size) {
+    sunkShip = sh.name;
+  }
+} else if (cell && cell.hit) {
+  // already hit (shouldn't happen)
+  result = 'hit';
+} else {
+  // ✅ record a miss on defender's board
+  target.board[key] = { miss: true };
+}
+
 
     // check end
     if (allShipsSunk(oppn)) {
