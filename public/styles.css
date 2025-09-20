@@ -86,6 +86,11 @@ h1 {
   flex-wrap: wrap;
 }
 
+.cell.miss {
+  background-color: rgba(0, 0, 255, 0.3);
+}
+
+
 .btn {
   background: linear-gradient(
     180deg,
