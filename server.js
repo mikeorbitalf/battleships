@@ -227,7 +227,6 @@ function sendPrivateBoards() {
   }
 }
 
-`
 function summarizeShips(ships) {
   const sum = {};
   for (const [id, s] of Object.entries(ships)) {
