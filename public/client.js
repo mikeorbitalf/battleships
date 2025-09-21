@@ -292,9 +292,6 @@ socket.on('boards', ({ you, opponent }) => {
 });
 
 
-  renderBoards();
-});
-
 
 socket.on(
   'shotResult',
