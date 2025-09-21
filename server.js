@@ -206,33 +206,39 @@ function sendPrivateBoards() {
     const myShips = state.players[viewer].ships;
 
     const opp = viewer === 1 ? 2 : 1;
-    const oppShots = state.players[viewer].shotsTaken;
+    const oppShots = state.players[viewer].shotsTaken; // what I shot
 
-    let opponentView = {};
-
-    if (state.phase === PHASES.FINISHED) {
-      // GAME OVER: reveal full opponent board + ships
-      opponentView = {
-        full: state.players[opp].board,
-        ships: summarizeShips(state.players[opp].ships),
-      };
-    } else {
-      // FOG VIEW: only show hits/misses from my perspective
-      const fog = {};
-      for (const shot of oppShots) {
-        const cell = state.players[opp].board[shot];
-        if (cell && cell.hit) fog[shot] = { result: 'H' };
-        else fog[shot] = { result: 'M' };
+    // Build fog based on *my* shotsTaken (so my misses/hits are preserved)
+    const fog = {};
+    for (const shot of oppShots) {
+      const cell = state.players[opp].board[shot];
+      if (cell && cell.hit) {
+        fog[shot] = { result: 'H' };
+      } else {
+        fog[shot] = { result: 'M' };
       }
-      opponentView = { fog };
     }
 
-    io.to(vs.socketId).emit('boards', {
-      you: { board: myBoard, ships: summarizeShips(myShips) },
-      opponent: opponentView,
-    });
+    if (state.phase === PHASES.FINISHED) {
+      // GAME OVER: reveal full opponent board *and* include my fog (so my misses still show)
+      io.to(vs.socketId).emit('boards', {
+        you: { board: myBoard, ships: summarizeShips(myShips) },
+        opponent: {
+          full: state.players[opp].board,
+          ships: summarizeShips(state.players[opp].ships),
+          fog: fog,
+        },
+      });
+    } else {
+      // Normal: only send fog (what I shot)
+      io.to(vs.socketId).emit('boards', {
+        you: { board: myBoard, ships: summarizeShips(myShips) },
+        opponent: { fog: fog },
+      });
+    }
   }
 }
+
 
 
 function summarizeShips(ships) {
