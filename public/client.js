@@ -97,13 +97,19 @@ for (const cell of oppBoardEl.children) {
   const k = `${r},${c}`;
 
   if (window._oppFullBoard) {
-    // GAME OVER: show full board
+    // GAME OVER: show the full opponent board (ships, hits),
+    // but *also* overlay your fog (your misses/hits) so misses are visible.
     const oppCell = window._oppFullBoard[k];
+
+    // Reveal ships (surviving or hit)
     if (oppCell && oppCell.shipId) cell.classList.add('ship');
+
+    // Show any hits recorded on the opponent board
     if (oppCell && oppCell.hit) cell.classList.add('hit');
 
-    // Show where YOU shot and missed
-    if (!oppCell && oppFog[k]) {
+    // Overlay your shot results (fog) — this shows your misses even on revealed board
+    if (oppFog[k]) {
+      if (oppFog[k].result === 'H') cell.classList.add('hit');
       if (oppFog[k].result === 'M') cell.classList.add('miss');
     }
   } else {
@@ -113,11 +119,13 @@ for (const cell of oppBoardEl.children) {
       if (seen.result === 'H') cell.classList.add('hit');
       if (seen.result === 'M') cell.classList.add('miss');
     }
+    // Add "aimable" highlight if my turn
     if (phase === 'in-progress' && mySlot && turn === mySlot && !seen) {
       cell.classList.add('aim');
     }
   }
 }
+
 
 
 
