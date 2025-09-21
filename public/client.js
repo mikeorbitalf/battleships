@@ -254,13 +254,23 @@ socket.on('state', (s) => {
 });
 
 socket.on('boards', ({ you, opponent }) => {
-  // Full info for your own board
   myBoard = you.board || {};
   window._youShips = you.ships || {};
-  // Fog for opponent
-  oppFog = opponent.fog || {};
+
+  if (opponent.full) {
+    // GAME OVER: show all opponent ships
+    oppFog = {}; // clear fog
+    window._oppFullBoard = opponent.full;
+    window._oppShips = opponent.ships;
+  } else {
+    window._oppFullBoard = null;
+    window._oppShips = null;
+    oppFog = opponent.fog || {};
+  }
+
   renderBoards();
 });
+
 
 socket.on(
   'shotResult',
