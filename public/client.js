@@ -101,6 +101,11 @@ for (const cell of oppBoardEl.children) {
     const oppCell = window._oppFullBoard[k];
     if (oppCell && oppCell.shipId) cell.classList.add('ship');
     if (oppCell && oppCell.hit) cell.classList.add('hit');
+
+    // Show where YOU shot and missed
+    if (!oppCell && oppFog[k]) {
+      if (oppFog[k].result === 'M') cell.classList.add('miss');
+    }
   } else {
     // Normal fog of war
     const seen = oppFog[k];
@@ -113,6 +118,7 @@ for (const cell of oppBoardEl.children) {
     }
   }
 }
+
 
 
   renderShipStatus();
