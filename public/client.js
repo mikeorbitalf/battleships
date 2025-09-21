@@ -89,21 +89,31 @@ function renderBoards() {
   }
 
   // Opponent board (fog)
-  for (const cell of oppBoardEl.children) {
-    const r = +cell.dataset.r,
-      c = +cell.dataset.c;
-    cell.className = 'cell';
-    const k = `${r},${c}`;
+// Opponent board
+for (const cell of oppBoardEl.children) {
+  const r = +cell.dataset.r,
+    c = +cell.dataset.c;
+  cell.className = 'cell';
+  const k = `${r},${c}`;
+
+  if (window._oppFullBoard) {
+    // GAME OVER: show full board
+    const oppCell = window._oppFullBoard[k];
+    if (oppCell && oppCell.shipId) cell.classList.add('ship');
+    if (oppCell && oppCell.hit) cell.classList.add('hit');
+  } else {
+    // Normal fog of war
     const seen = oppFog[k];
     if (seen) {
       if (seen.result === 'H') cell.classList.add('hit');
       if (seen.result === 'M') cell.classList.add('miss');
     }
-    // Add "aimable" highlight if my turn
     if (phase === 'in-progress' && mySlot && turn === mySlot && !seen) {
       cell.classList.add('aim');
     }
   }
+}
+
 
   renderShipStatus();
 }
