@@ -270,19 +270,19 @@ socket.on('state', (s) => {
 });
 
 socket.on('boards', ({ you, opponent }) => {
+  // Full info for your own board
   myBoard = you.board || {};
   window._youShips = you.ships || {};
 
-  if (opponent.full) {
-    // GAME OVER: show all opponent ships
-    oppFog = {}; // clear fog
-    window._oppFullBoard = opponent.full;
-    window._oppShips = opponent.ships;
-  } else {
-    window._oppFullBoard = null;
-    window._oppShips = null;
-    oppFog = opponent.fog || {};
-  }
+  // If server sent a full opponent board (game over), keep it.
+  // Always keep the fog (your shots) if provided.
+  window._oppFullBoard = opponent.full || null;
+  window._oppShips = opponent.ships || null;
+  oppFog = opponent.fog || {};
+
+  renderBoards();
+});
+
 
   renderBoards();
 });
